@@ -1,4 +1,4 @@
-﻿#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # Author:      amir
 # Created:     10/25/2015
 #
@@ -74,20 +74,27 @@ def studentInfo():
     return info
 
 def penalty(x,y,seq1,seq2): # Penalty Definitions
-    if seq1[x] == seq2[y]: 
-	return 1 #MATCH
-    elif seq1[x] == 'A' and seq2[y] == 'T' or seq1[x] == 'T' and seq2[y] == 'A': 
-	return -0.15 #SUBS T-A 
-    elif seq1[x] == 'C' and seq2[y] == 'G' or seq1[x] == 'G' and seq2[y] == 'C': 
-	return -0.15 #SUBS G-C 
-    elif seq1[x] == 'A' and seq2[y] == 'G' or seq1[x] == 'A' and seq2[y] == 'G': 
-	return -0.1 #SUBS A-G
-    elif seq1[x] == 'A' and seq2[y] == 'C' or seq1[x] == 'C' and seq2[y] == 'A': 
-	return -0.1 #SUBS A-C
-    elif seq1[x] == 'T' and seq2[y] == 'G' or seq1[x] == 'G' and seq2[y] == 'T': 
-	return -0.1 #SUBS T-G
-    elif seq1[x] == 'T' and seq2[y] == 'C' or seq1[x] == 'C' and seq2[y] == 'T': 
-	return -0.1 #SUBS T-x
+    if (seq1[x] == seq2[y]): 
+    	return 1.0 #MATCH
+    elif ( (seq1[x] == 'A' and seq2[y] == 'T') or (seq1[x] == 'T' and seq2[y] == 'A') ): 
+	    return -0.15 #SUBS T-A 
+    elif ((seq1[x] == 'C' and seq2[y] == 'G') or (seq1[x] == 'G' and seq2[y] == 'C')): 
+	    return -0.15 #SUBS G-C 
+    else: 
+	    return -0.1 #SUBS for the rest
+
+
+def biggest(deletion, insert, match):
+    if (deletion > insert and deletion > match):
+        Max = deletion
+    elif(insert > deletion and insert > match):
+        Max = insert
+    else:
+        Max = match
+    return Max
+
+def reversed(str):
+    return str[::-1]
 
 def DNASeqAlignment(DNASeq1,DNASeq2,outputPath):
     similarityScore = 0
@@ -98,53 +105,78 @@ def DNASeqAlignment(DNASeq1,DNASeq2,outputPath):
     # Compute new values for similarityScore and sequenceAlignment1 and sequenceAlignment2  #                                                                  #
     #########################################################################################
     
-    #python "FILENAME" "Seq1" "Seq2" "output.txt"
-
+    #end of rows
+    end1 = len(DNASeq1) + 1 
+    #end of columns
+    end2 = len(DNASeq2) + 1 
     
-    end1 = len(DNASeq1) + 1 #Gets Size of 1st string
-    end2 = len(DNASeq2) + 1 #Gets Size of 2nd string
-    
-    #matrix = [[0.0 for i in range (end1)] for j in range (end2)] #Initialization
-    
-    #Fill Up 1st Column
-    #for i in range (1, end1):
-    #    matrix[i][0] = matrix[i-1][0] - 0.2
-    
-    #for j in range (1, end2):                            #Fill Up 1st Row
-    #     matrix[0][j] = matrix[0][j-1] - 0.2
-    
-    #for i in range (1,end1):                            #Fill Table
-    #    for j in range (1,end2):
-    #        val = max(max( matrix[i][j-1] - 0.2, matrix[i-1][j] - 0.2), penalty(i-1, j-1, DNASeq1, DNASeq2))
-            #val = max( val, penalty(i-1, j-1, DNASeq1, DNASeq2) )
-    #        matrix[i][j] = val
-        
-    #similarityScore = matrix [end1 - 1][end2 - 1]   
-       
     #Matrix initialization
     c = {}
+    #make first spot of matrix 0
     c[0,0] = 0
+    #loop though the first row and set values
     for i in range(1,end1):
         c[i,0]= c[i-1,0] - 0.2
+    #loop thought the first column and set values
     for j in range(1,end2):
         c[0,j] = c[0, j-1] - 0.2
-    # loop through the rows with i
+    # loop through the rows
     for i in range(1,end1):
-        #loop through the columns with j
+        #loop through the columns
         for j in range(1,end2):
-            #find the max value of the 3 numbers surrounding the spot you are in
-            value = max(max( c[i,j-1] - 0.2, c[i-1,j] - 0.2), penalty(i-1, j-1, DNASeq1, DNASeq2))
-            if i != end1 or j != end2:
-                c[i,j] = penalty(i,j, DNASeq1, DNASeq2) + value
+            deletion = c[i-1,j] - 0.2
+            insert = c[i,j-1] - 0.2
+            match = c[i-1, j-1] + penalty(i-1, j-1, DNASeq1, DNASeq2)
+            
+            #use function to check which is the max score and place into matrix
+            c[i,j] = biggest(deletion,insert,match)
     
-    #printout of table
-    for i in range(0, end1):
-        for j in range(0, end2):
-            print c[i,j],
-        print '\n'
+    #printing matrix
+    #for i in range(0, end1):
+    #    for j in range(0, end2):
+    #        print c[i,j],
+    #    print '\n'
     
-    #similarityScore = c[ end1-1, end2-1]
- 
+    #similarity score becomes the last entry in the matrix
+    similarityScore = c[ end1-1, end2-1]
+    
+    #incrementors to loop through rows and columns
+    i, j =0, 0
+    #using the length of the strings to start from the end of the matrix
+    endi = end1-1
+    endj = end2-1
+    #loop through until incrementors hit the end of the column or the row
+    while( (i < end1 and endi >0) or (j < end2 and endj > 0)):
+        #check if the spot above the index we are looking at is greater
+        if(c[endi - 1, endj] > c[endi -1, endj -1] and c[endi - 1, endj] > c[endi, endj -1]):
+            #if it is, then skip for the first DNA
+            sequenceAlignment1 = sequenceAlignment1 + '_'
+            sequenceAlignment2 = sequenceAlignment2 + DNASeq2[endj-1]
+            #increment i
+            if(i < end1):
+                i = i + 1
+        #check if spot to the left is greater
+        elif(c[endi, endj-1] > c[endi -1, endj -1] and c[endi, endj-1] > c[endi-1, endj -1]):
+            #if it is, then skip for the second DNA
+            sequenceAlignment1 = sequenceAlignment1 + DNASeq1[endi-1]
+            sequenceAlignment2 = sequenceAlignment2 + '_'
+            #increment j
+            if(j < end2):
+                j = j +1
+        else:
+            sequenceAlignment1 = sequenceAlignment1 + DNASeq1[endi-1]
+            sequenceAlignment2 = sequenceAlignment2 + DNASeq2[endj-1]
+            if(i < end1 - 1):
+                i = i + 1
+            if(j < end2 -1):
+                j = j +1
+        #decrease the backwards index
+        endi = endi - 1
+        endj = endj - 1
+        
+    sequenceAlignment1 = reversed(sequenceAlignment1)
+    sequenceAlignment2 = reversed(sequenceAlignment2)
+    
     #################################  Output Section  ######################################
     result = "Similarity score: " + str(similarityScore) + '\n'
     result = result + "Sequence alignment1: " + sequenceAlignment1 + '\n'
