@@ -48,26 +48,39 @@ import argparse
 
 def studentInfo():
     pythonVersion = 'Version'
-    studentFirstName = "FirstName"
-    studentLastName = "LastName"
-    studentSectionNumber = "SectionNumber"
-    studentNetId = "NetId"
-    info = 'FirstName: ' + studentFirstName + '\n'
-    info = info + 'LastName: ' + studentLastName + '\n'
-    info = info + 'Section: ' + studentSectionNumber + '\n'
-    info = info + 'NetId: ' + studentNetId + '\n'
-    info = info + 'Python version: ' + pythonVersion + '\n'
+    
+    student1FirstName = "Lauren"
+    student1LastName = "Boyd"
+    student1SectionNumber = "001"
+    student1NetId = "lboyd002"
+    
+    student2FirstName = "FirstName2"
+    student2LastName = "LastName2"
+    student2SectionNumber = "SectionNumber2"
+    student2NetId = "NetId2"
+    
+    info = 'Python version: ' + pythonVersion + '\n' + '\n'
+    info = info + 'FirstName: ' + student1FirstName + '\n'
+    info = info + 'LastName: ' + student1LastName + '\n'
+    info = info + 'Section: ' + student1SectionNumber + '\n'
+    info = info + 'NetId: ' + student1NetId + '\n' + '\n'
+    
+    info = info + 'FirstName: ' + student2FirstName + '\n'
+    info = info + 'LastName: ' + student2LastName + '\n'
+    info = info + 'Section: ' + student2SectionNumber + '\n'
+    info = info + 'NetId: ' + student2NetId + '\n' + '\n'
+    
     return info
 
 def DNASeqAlignment(DNASeq1,DNASeq2,outputPath):
     similarityScore = -1
     sequenceAlignment1 = ''
     sequenceAlignment2 = ''
+    
     #########################################################################################
-    # Compute new values for similarityScore and sequenceAlignment1 and
-    # sequenceAlignment2 #
+    # Compute new values for similarityScore and sequenceAlignment1 and sequenceAlignment2  #                                                                  #
     #########################################################################################
-
+    
     #################################  Output Section  ######################################
     result = "Similarity score: " + str(similarityScore) + '\n'
     result = result + "Sequence alignment1: " + sequenceAlignment1 + '\n'
@@ -86,7 +99,7 @@ def readFile(filePath):
 
     uniqueChars = ''.join(set(logLines))
     for ch in uniqueChars:
-        if ch not in {'A','a','C','c','G','g','T','t'}:
+        if ch not in ('A','a','C','c','G','g','T','t'):
             logLines = logLines.replace(ch,'')
     logLines = logLines.upper()
     return logLines
