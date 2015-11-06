@@ -47,7 +47,7 @@ import sys
 import argparse
 
 def studentInfo():
-    pythonVersion = 'Version'
+    pythonVersion = '2.7.10'
     
     student1FirstName = "Lauren"
     student1LastName = "Boyd"
@@ -79,6 +79,31 @@ def DNASeqAlignment(DNASeq1,DNASeq2,outputPath):
     
     #########################################################################################
     # Compute new values for similarityScore and sequenceAlignment1 and sequenceAlignment2  #                                                                  #
+    h = [ ]
+    c = [ ]
+    for x in range(0, len(DNASeq1)):
+        if DNASeq1[x] == DNASeq2[x]
+            h.append('|')
+        else:
+            h.append(' ')
+        if len(h) > 1:
+            if h[x] == '|':
+                if h[x] == h[x-1]:
+                    c.append(3)
+                else:
+                    c.append(1)
+                elif h[x] == ' ':
+                    c.append(-1)
+            else:
+                if h[x] == '|':
+                    c.append(1)
+                elif h[x] == ' ':
+                    c.append(-1)
+    a = "".join(h)
+    
+    similarityScore = sum(c)
+
+
     #########################################################################################
     
     #################################  Output Section  ######################################
