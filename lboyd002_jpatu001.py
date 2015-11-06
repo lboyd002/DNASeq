@@ -45,19 +45,20 @@
 import os
 import sys
 import argparse
+import decimal
 
 def studentInfo():
-    pythonVersion = '2.7.10'
+    pythonVersion = '2.7.6'
     
     student1FirstName = "Lauren"
     student1LastName = "Boyd"
     student1SectionNumber = "001"
     student1NetId = "lboyd002"
     
-    student2FirstName = "FirstName2"
-    student2LastName = "LastName2"
-    student2SectionNumber = "SectionNumber2"
-    student2NetId = "NetId2"
+    student2FirstName = "Juan Paulo"
+    student2LastName = "Patulandong"
+    student2SectionNumber = "001"
+    student2NetId = "jpatu001"
     
     info = 'Python version: ' + pythonVersion + '\n' + '\n'
     info = info + 'FirstName: ' + student1FirstName + '\n'
@@ -72,40 +73,78 @@ def studentInfo():
     
     return info
 
+def penalty(x,y,seq1,seq2): # Penalty Definitions
+    if seq1[x] == seq2[y]: 
+	return 1 #MATCH
+    elif seq1[x] == 'A' and seq2[y] == 'T' or seq1[x] == 'T' and seq2[y] == 'A': 
+	return -0.15 #SUBS T-A 
+    elif seq1[x] == 'C' and seq2[y] == 'G' or seq1[x] == 'G' and seq2[y] == 'C': 
+	return -0.15 #SUBS G-C 
+    elif seq1[x] == 'A' and seq2[y] == 'G' or seq1[x] == 'A' and seq2[y] == 'G': 
+	return -0.1 #SUBS A-G
+    elif seq1[x] == 'A' and seq2[y] == 'C' or seq1[x] == 'C' and seq2[y] == 'A': 
+	return -0.1 #SUBS A-C
+    elif seq1[x] == 'T' and seq2[y] == 'G' or seq1[x] == 'G' and seq2[y] == 'T': 
+	return -0.1 #SUBS T-G
+    elif seq1[x] == 'T' and seq2[y] == 'C' or seq1[x] == 'C' and seq2[y] == 'T': 
+	return -0.1 #SUBS T-x
+
 def DNASeqAlignment(DNASeq1,DNASeq2,outputPath):
-    similarityScore = -1
+    similarityScore = 0
     sequenceAlignment1 = ''
     sequenceAlignment2 = ''
     
     #########################################################################################
     # Compute new values for similarityScore and sequenceAlignment1 and sequenceAlignment2  #                                                                  #
-    h = [ ]
-    c = [ ]
-    for x in range(0, len(DNASeq1)):
-        if DNASeq1[x] == DNASeq2[x]
-            h.append('|')
-        else:
-            h.append(' ')
-        if len(h) > 1:
-            if h[x] == '|':
-                if h[x] == h[x-1]:
-                    c.append(3)
-                else:
-                    c.append(1)
-                elif h[x] == ' ':
-                    c.append(-1)
-            else:
-                if h[x] == '|':
-                    c.append(1)
-                elif h[x] == ' ':
-                    c.append(-1)
-    a = "".join(h)
-    
-    similarityScore = sum(c)
-
-
     #########################################################################################
     
+    #python "FILENAME" "Seq1" "Seq2" "output.txt"
+
+    
+    end1 = len(DNASeq1) + 1 #Gets Size of 1st string
+    end2 = len(DNASeq2) + 1 #Gets Size of 2nd string
+    
+    #matrix = [[0.0 for i in range (end1)] for j in range (end2)] #Initialization
+    
+    #Fill Up 1st Column
+    #for i in range (1, end1):
+    #    matrix[i][0] = matrix[i-1][0] - 0.2
+    
+    #for j in range (1, end2):                            #Fill Up 1st Row
+    #     matrix[0][j] = matrix[0][j-1] - 0.2
+    
+    #for i in range (1,end1):                            #Fill Table
+    #    for j in range (1,end2):
+    #        val = max(max( matrix[i][j-1] - 0.2, matrix[i-1][j] - 0.2), penalty(i-1, j-1, DNASeq1, DNASeq2))
+            #val = max( val, penalty(i-1, j-1, DNASeq1, DNASeq2) )
+    #        matrix[i][j] = val
+        
+    #similarityScore = matrix [end1 - 1][end2 - 1]   
+       
+    #Matrix initialization
+    c = {}
+    c[0,0] = 0
+    for i in range(1,end1):
+        c[i,0]= c[i-1,0] - 0.2
+    for j in range(1,end2):
+        c[0,j] = c[0, j-1] - 0.2
+    # loop through the rows with i
+    for i in range(1,end1):
+        #loop through the columns with j
+        for j in range(1,end2):
+            #find the max value of the 3 numbers surrounding the spot you are in
+            value = max(max( c[i,j-1] - 0.2, c[i-1,j] - 0.2), penalty(i-1, j-1, DNASeq1, DNASeq2))
+            if i != end1 or j != end2:
+                c[i,j] = penalty(i,j, DNASeq1, DNASeq2) + value
+    
+    #printout of table
+    for i in range(0, end1):
+        for j in range(0, end2):
+            print c[i,j],
+        print '\n'
+    
+    #similarityScore = c[ end1-1, end2-1]
+ 
     #################################  Output Section  ######################################
     result = "Similarity score: " + str(similarityScore) + '\n'
     result = result + "Sequence alignment1: " + sequenceAlignment1 + '\n'
