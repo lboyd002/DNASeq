@@ -34,14 +34,6 @@
 #      8) In the output section the result is going to be saved in out.txt file
 #-------------------------------------------------------------------------------
 
-# ALGORITHM: 
-#
-#
-#
-#
-#
-
-
 import os
 import sys
 import argparse
@@ -83,7 +75,7 @@ def penalty(x,y,seq1,seq2): # Penalty Definitions
     else: 
 	    return -0.1 #SUBS for the rest
 
-
+#compares which of match deletion or insertion score is biggest
 def biggest(deletion, insert, match):
     if (deletion > insert and deletion > match):
         Max = deletion
@@ -93,6 +85,7 @@ def biggest(deletion, insert, match):
         Max = match
     return Max
 
+#reverses a string
 def reversed(str):
     return str[::-1]
 
@@ -114,12 +107,14 @@ def DNASeqAlignment(DNASeq1,DNASeq2,outputPath):
     c = {}
     #make first spot of matrix 0
     c[0,0] = 0
-    #loop though the first row and set values
+    #loop though the first row and set values with -0.2 penalties
     for i in range(1,end1):
         c[i,0]= c[i-1,0] - 0.2
-    #loop thought the first column and set values
+    #loop though the first column and set values with -0.2 penalties
     for j in range(1,end2):
         c[0,j] = c[0, j-1] - 0.2
+    
+    #placing the values in the matrix
     # loop through the rows
     for i in range(1,end1):
         #loop through the columns
@@ -140,7 +135,7 @@ def DNASeqAlignment(DNASeq1,DNASeq2,outputPath):
     #similarity score becomes the last entry in the matrix
     similarityScore = c[ end1-1, end2-1]
     
-    #incrementors to loop through rows and columns
+    #incrementors for while loop
     i, j =0, 0
     #using the length of the strings to start from the end of the matrix
     endi = end1-1
@@ -163,9 +158,12 @@ def DNASeqAlignment(DNASeq1,DNASeq2,outputPath):
             #increment j
             if(j < end2):
                 j = j +1
+        #check if diagonal is greater
         else:
+            #place the values of both sequences in the alignment
             sequenceAlignment1 = sequenceAlignment1 + DNASeq1[endi-1]
             sequenceAlignment2 = sequenceAlignment2 + DNASeq2[endj-1]
+            #increment i and j
             if(i < end1 - 1):
                 i = i + 1
             if(j < end2 -1):
@@ -174,6 +172,7 @@ def DNASeqAlignment(DNASeq1,DNASeq2,outputPath):
         endi = endi - 1
         endj = endj - 1
         
+    #reverse the alignments
     sequenceAlignment1 = reversed(sequenceAlignment1)
     sequenceAlignment2 = reversed(sequenceAlignment2)
     
